@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import Login from "../../components/Login";
 import { AuthContext } from "../../context/AuthContext";
 import { factories } from "../testUtils";
@@ -29,9 +30,11 @@ describe("Login", () => {
     const mockAuth = createAuthContext(authValue);
     return {
       ...render(
-        <AuthContext.Provider value={mockAuth}>
-          <Login />
-        </AuthContext.Provider>
+        <MemoryRouter>
+          <AuthContext.Provider value={mockAuth}>
+            <Login />
+          </AuthContext.Provider>
+        </MemoryRouter>
       ),
       mockAuth,
     };

@@ -34,7 +34,7 @@ const SearchContacts = ({ onContactAdded, onClose }) => {
     try {
       console.log("Searching for:", searchQuery);
       const response = await apiClient.post("/api/contacts/search", {
-        searchTerm: searchQuery,
+        searchTerm: searchQuery.trim(),
       });
       console.log("Search response:", response.data);
       

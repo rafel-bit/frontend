@@ -18,6 +18,8 @@ const Login = () => {
 
     try {
       await login(email, password);
+      setEmail("");
+      setPassword("");
       navigate("/chat");
     } catch (err) {
       setLocalError(err.response?.data?.message || "Login failed");

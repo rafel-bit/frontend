@@ -11,7 +11,7 @@ const SendMessage = ({ onSendMessage }) => {
 
     setLoading(true);
     try {
-      await onSendMessage(message);
+      await onSendMessage(message.trim());
       setMessage("");
     } catch (err) {
       console.error("Failed to send message:", err);

@@ -84,6 +84,26 @@
   font-size: 12px;
 }
 
+.user-info-clickable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.user-info-clickable:hover {
+  background-color: #f0f0f0;
+}
+
+.edit-profile-hint {
+  display: none;
+  color: #667eea;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.user-info-clickable:hover .edit-profile-hint {
+  display: block;
+}
+
 .chat-main {
   flex: 1;
   display: flex;

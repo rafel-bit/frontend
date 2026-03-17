@@ -12,15 +12,17 @@ export const AuthProvider = ({ children }) => {
   // Check if user is authenticated on mount
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
-        // Always try to fetch userinfo - the HTTPOnly cookie will handle authentication
-        // No need to check localStorage since backend uses secure cookies
         const response = await apiClient.get("/api/auth/userinfo");
         const userData = response.data.user || response.data;
         setUser(userData);
       } catch (err) {
         console.log("Not authenticated");
-        // Clear any stale tokens
         localStorage.removeItem("authToken");
       } finally {
         setLoading(false);
@@ -43,6 +45,7 @@ export const AuthProvider = ({ children }) => {
       // Backend stores JWT in HTTPOnly cookie, so we don't need to save it
       // Response contains either { user: {...} } or just the user object
       const user = response.data.user || response.data;
+      localStorage.setItem("authToken", "session");
       setUser(user);
       return response.data;
     } catch (err) {
@@ -72,6 +75,7 @@ export const AuthProvider = ({ children }) => {
       // Backend stores JWT in HTTPOnly cookie
       // Response contains either { user: {...} } or just the user object
       const user = response.data.user || response.data;
+      localStorage.setItem("authToken", "session");
       setUser(user);
       return response.data;
     } catch (err) {
@@ -108,10 +112,11 @@ export const AuthProvider = ({ children }) => {
         firstName,
         lastName,
       });
-      
-      // Response contains the updated user object
-      const user = response.data.user || response.data;
-      setUser(user);
+
+      // Merge returned fields with the known-saved names so the UI always
+      // reflects the update even if the API returns a minimal response object.
+      const returned = response.data.user || response.data;
+      setUser((prev) => ({ ...prev, ...returned, firstName, lastName }));
       return response.data;
     } catch (err) {
       // Handle both axios-style errors and plain rejection objects
@@ -123,7 +128,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         errorMsg = String(err);
       }
-      setError(errorMsg);
+      flushSync(() => setError(errorMsg));
       throw err;
     }
   };

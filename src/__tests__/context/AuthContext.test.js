@@ -47,6 +47,7 @@ describe("AuthContext", () => {
 
   describe("initialization", () => {
     it("starts with loading=true and no user", () => {
+      localStorage.setItem("authToken", "pending-token");
       apiClient.get.mockReturnValue(new Promise(() => {})); // Never resolves
       const getContext = renderAuthConsumer();
 
@@ -277,6 +278,94 @@ describe("AuthContext", () => {
 
       await expect(act(() => getContext().signup("x", "y", "A", "B"))).rejects.toEqual(
         error
+      );
+    });
+  });
+
+  describe("updateProfile()", () => {
+    /**
+     * Each test needs an already-authenticated user so it can call updateProfile.
+     * Strategy: set a token in localStorage and mock apiClient.get to return a user,
+     * then wait for loading to finish (checkAuth resolves).
+     */
+    const existingUser = {
+      id: "u10",
+      email: "profile@test.com",
+      firstName: "Old",
+      lastName: "Name",
+      color: "#000",
+    };
+
+    it("updates user state with new names", async () => {
+      localStorage.setItem("authToken", "tok");
+      apiClient.get.mockResolvedValue({ data: existingUser });
+      apiClient.post.mockResolvedValue({
+        data: { user: { ...existingUser, firstName: "Alice", lastName: "Smith" } },
+      });
+
+      const getContext = renderAuthConsumer();
+      await waitFor(() => expect(getContext().isAuthenticated).toBe(true));
+
+      await act(() => getContext().updateProfile("Alice", "Smith"));
+
+      expect(getContext().user.firstName).toBe("Alice");
+      expect(getContext().user.lastName).toBe("Smith");
+    });
+
+    it("merges returned fields with submitted names", async () => {
+      localStorage.setItem("authToken", "tok");
+      apiClient.get.mockResolvedValue({ data: existingUser });
+      // API returns an extra field (color) that was not in the original user
+      apiClient.post.mockResolvedValue({
+        data: { user: { ...existingUser, color: "#abc" } },
+      });
+
+      const getContext = renderAuthConsumer();
+      await waitFor(() => expect(getContext().isAuthenticated).toBe(true));
+
+      await act(() => getContext().updateProfile("Alice", "Smith"));
+
+      const updated = getContext().user;
+      // Returned field merged in
+      expect(updated.color).toBe("#abc");
+      // Submitted names always applied on top
+      expect(updated.firstName).toBe("Alice");
+      expect(updated.lastName).toBe("Smith");
+    });
+
+    it("calls the correct API endpoint with names", async () => {
+      localStorage.setItem("authToken", "tok");
+      apiClient.get.mockResolvedValue({ data: existingUser });
+      apiClient.post.mockResolvedValue({
+        data: { user: { ...existingUser, firstName: "Bob", lastName: "Jones" } },
+      });
+
+      const getContext = renderAuthConsumer();
+      await waitFor(() => expect(getContext().isAuthenticated).toBe(true));
+
+      await act(() => getContext().updateProfile("Bob", "Jones"));
+
+      expect(apiClient.post).toHaveBeenCalledWith("/api/auth/update-profile", {
+        firstName: "Bob",
+        lastName: "Jones",
+      });
+    });
+
+    it("throws and sets error on failure", async () => {
+      localStorage.setItem("authToken", "tok");
+      apiClient.get.mockResolvedValue({ data: existingUser });
+      const error = { response: { data: { message: "Update failed" } } };
+      apiClient.post.mockRejectedValue(error);
+
+      const getContext = renderAuthConsumer();
+      await waitFor(() => expect(getContext().isAuthenticated).toBe(true));
+
+      await expect(
+        act(() => getContext().updateProfile("Bad", "Input"))
+      ).rejects.toEqual(error);
+
+      await waitFor(() =>
+        expect(getContext().error).toBe("Update failed")
       );
     });
   });

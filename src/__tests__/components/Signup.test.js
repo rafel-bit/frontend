@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import Signup from "../../components/Signup";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -27,9 +28,11 @@ describe("Signup", () => {
     const mockAuth = createAuthContext(authValue);
     return {
       ...render(
-        <AuthContext.Provider value={mockAuth}>
-          <Signup />
-        </AuthContext.Provider>
+        <MemoryRouter>
+          <AuthContext.Provider value={mockAuth}>
+            <Signup />
+          </AuthContext.Provider>
+        </MemoryRouter>
       ),
       mockAuth,
     };
@@ -126,7 +129,8 @@ describe("Signup", () => {
 
     it("shows no error message on initial render", () => {
       renderSignup();
-      expect(screen.queryByText(/already|error/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.queryByText(/signup failed|email already/i)).not.toBeInTheDocument();
     });
   });
 

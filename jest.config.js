@@ -18,6 +18,7 @@ module.exports = {
   moduleFileExtensions: ['js', 'jsx'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  testPathIgnorePatterns: ['/node_modules/', 'testUtils\\.js$'],
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
     '!src/index.js',

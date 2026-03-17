@@ -7,7 +7,7 @@ const AuthInitializer = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("✅ User authenticated, initializing socket...");
+      console.log("User authenticated, initializing socket...");
       initSocket();
     }
   }, [isAuthenticated]);

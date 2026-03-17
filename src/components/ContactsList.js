@@ -13,7 +13,7 @@ const ContactsList = ({
         <p className="no-contacts">No contacts yet</p>
       ) : Array.isArray(contacts) ? (
         contacts.map((contact) => {
-          const contactId = contact._id || contact.id;
+          const contactId = contact.id || contact._id;
           const firstName = contact.firstName || contact.otherUser?.firstName || "User";
           const lastName = contact.lastName || contact.otherUser?.lastName || "";
           const email = contact.email || contact.otherUser?.email || "unknown";
@@ -22,7 +22,7 @@ const ContactsList = ({
             <div
               key={contactId}
               className={`contact-item ${
-                (selectedContact?._id || selectedContact?.id) === contactId
+                (selectedContact?.id || selectedContact?._id) === contactId
                   ? "active"
                   : ""
               }`}

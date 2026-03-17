@@ -27,22 +27,22 @@ export const initSocket = () => {
     });
 
     socket.on("connect", () => {
-      console.log("✅ Socket CONNECTED:", socket.id);
+      console.log("Socket CONNECTED:", socket.id);
       resolve(socket);
     });
 
     socket.on("disconnect", () => {
-      console.log("❌ Socket DISCONNECTED");
+      console.log("Socket DISCONNECTED");
     });
 
     socket.on("connect_error", (error) => {
-      console.error("❌ Socket connection error:", error);
+      console.error("Socket connection error:", error);
     });
 
     // Centralized message listener that broadcasts to all registered listeners
     socket.on("receiveMessage", (data) => {
-      console.log("🔔 Socket.IO receiveMessage event fired with data:", data);
-      console.log("📢 Number of listeners registered:", messageListeners.length);
+      console.log("Socket.IO receiveMessage event fired with data:", data);
+      console.log("Number of listeners registered:", messageListeners.length);
       messageListeners.forEach((listener, index) => {
         console.log(`  → Calling listener ${index}`);
         listener(data);

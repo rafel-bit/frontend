@@ -6,6 +6,7 @@ import ContactsList from "./ContactsList";
 import MessageList from "./MessageList";
 import SendMessage from "./SendMessage";
 import SearchContacts from "./SearchContacts";
+import EditProfile from "./EditProfile";
 import "./ChatRoom.css";
 
 const ChatRoom = () => {
@@ -15,6 +16,7 @@ const ChatRoom = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const messageUnsubscribeRef = useRef(null);
 
@@ -64,32 +66,23 @@ const ChatRoom = () => {
   useEffect(() => {
     if (!selectedContact || !user) return;
 
-    const selectedContactId = selectedContact?._id || selectedContact?.id;
-
-    console.log("Setting up message listener for contact:", selectedContactId);
+    const selectedContactId = selectedContact?.id || selectedContact?._id;
 
     const handleMessage = (data) => {
-      console.log("Live message received:", data);
+      const senderId = data.sender?.id || data.sender?._id || data.senderId;
+      const recipientId = data.recipient?.id || data.recipient?._id || data.recipientId;
 
-      // Normalize senderId from various possible formats
-      const senderId = data.sender?._id || data.sender?.id || data.senderId;
-      const recipientId = data.recipient?._id || data.recipient?.id || data.recipientId;
-
-      console.log("Message comparison - senderId:", senderId, "selectedId:", selectedContactId, "recipientId:", recipientId);
-
-      // Check if message is from/to the selected contact
       const isFromSelected = String(senderId) === String(selectedContactId);
       const isToSelected = String(recipientId) === String(selectedContactId);
 
       if (isFromSelected || isToSelected) {
         const newMessage = {
-          id: data._id || data.id,
+          id: data.id || data._id,
           content: data.content,
           senderId: String(senderId),
           recipientId: String(recipientId),
           timestamp: data.timestamp,
         };
-        console.log("Adding message to UI:", newMessage);
         setMessages((prev) => [...prev, newMessage]);
       }
 
@@ -133,12 +126,12 @@ const ChatRoom = () => {
   const fetchMessagesForContact = async (contact) => {
     if (!contact) return;
     try {
-      const contactId = contact._id || contact.id;
+      const contactId = contact.id || contact._id;
       const response = await apiClient.post("/api/messages/get-messages", {
         id: contactId,
       });
       const normalizedMessages = (response.data.messages || []).map((msg) => {
-        const senderId = msg.sender?._id || msg.sender?.id || msg.senderId || msg.userId;
+        const senderId = msg.sender?.id || msg.sender?._id || msg.senderId || msg.userId;
         return { ...msg, senderId: senderId ? String(senderId) : "" };
       });
       setMessages(normalizedMessages);
@@ -159,10 +152,10 @@ const ChatRoom = () => {
     if (!selectedContact) return;
     const intervalId = setInterval(async () => {
       try {
-        const contactId = selectedContact._id || selectedContact.id;
+        const contactId = selectedContact.id || selectedContact._id;
         const response = await apiClient.post("/api/messages/get-messages", { id: contactId });
         const normalizedMessages = (response.data.messages || []).map((msg) => {
-          const senderId = msg.sender?._id || msg.sender?.id || msg.senderId || msg.userId;
+          const senderId = msg.sender?.id || msg.sender?._id || msg.senderId || msg.userId;
           return { ...msg, senderId: senderId ? String(senderId) : "" };
         });
         setMessages((prev) => {
@@ -184,7 +177,7 @@ const ChatRoom = () => {
       const socket = getSocket();
       if (socket) {
         const senderId = user.id || user._id;
-        const recipientId = selectedContact._id || selectedContact.id;
+        const recipientId = selectedContact.id || selectedContact._id;
         
         socket.emit("sendMessage", {
           sender: senderId,
@@ -206,8 +199,7 @@ const ChatRoom = () => {
   };
 
   const handleDeleteContact = async (contactId) => {
-    if (
-      !window.confirm(
+    if (!window.confirm(
         "Are you sure you want to delete this conversation?"
       )
     ) {
@@ -217,9 +209,9 @@ const ChatRoom = () => {
     try {
       await apiClient.delete(`/api/contacts/delete-dm/${contactId}`);
       setContacts((prev) =>
-        prev.filter((c) => (c._id || c.id) !== contactId)
+        prev.filter((c) => (c.id || c._id) !== contactId)
       );
-      const currentContactId = selectedContact?._id || selectedContact?.id;
+      const currentContactId = selectedContact?.id || selectedContact?._id;
       if (currentContactId === contactId) {
         setSelectedContact(null);
         setMessages([]);
@@ -267,9 +259,10 @@ const ChatRoom = () => {
           </button>
         </div>
         {user && (
-          <div className="user-info">
+          <div className="user-info user-info-clickable" onClick={() => setShowEditProfile(true)} title="Edit profile">
             <p>{user.firstName} {user.lastName}</p>
             <small>{user.email}</small>
+            <small className="edit-profile-hint">Edit profile</small>
           </div>
         )}
         {loading ? (
@@ -294,7 +287,7 @@ const ChatRoom = () => {
             </div>
             <MessageList 
               messages={messages} 
-              currentUserId={user?.id || user?._id} 
+              currentUserId={user?.id || user?._id}
             />
             <SendMessage onSendMessage={handleSendMessage} />
           </>
@@ -306,10 +299,14 @@ const ChatRoom = () => {
       </div>
 
       {showSearchModal && (
-        <SearchContacts 
+        <SearchContacts
           onContactAdded={handleContactAdded}
           onClose={() => setShowSearchModal(false)}
         />
+      )}
+
+      {showEditProfile && (
+        <EditProfile onClose={() => setShowEditProfile(false)} />
       )}
     </div>
   );

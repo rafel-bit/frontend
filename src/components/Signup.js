@@ -20,6 +20,10 @@ const Signup = () => {
 
     try {
       await signup(email, password, firstName, lastName);
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPassword("");
       navigate("/chat");
     } catch (err) {
       console.error("Signup error caught:", err);
