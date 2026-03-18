@@ -15,15 +15,9 @@ jest.mock("../../services/socketService", () => ({
 
 import { initSocket } from "../../services/socketService";
 
-/**
- * Unit tests for AuthInitializer component
- *
- * Tests focus on:
- * - Calling initSocket when the user is authenticated
- * - Not calling initSocket when the user is not authenticated
- * - Rendering children transparently
- * - Re-calling initSocket when isAuthenticated transitions from false to true
- */
+
+//Unit tests for AuthInitializer component
+
 describe("AuthInitializer", () => {
   const createAuthContext = (overrides = {}) => ({
     isAuthenticated: false,
@@ -66,7 +60,7 @@ describe("AuthInitializer", () => {
     });
 
     it("calls initSocket again when isAuthenticated changes from false to true", () => {
-      // Wrapper component that holds auth state so we can update it
+      //Component that holds auth state so we can update it
       const AuthWrapper = () => {
         const [isAuthenticated, setIsAuthenticated] = useState(false);
         const mockAuth = createAuthContext({ isAuthenticated });

@@ -4,17 +4,8 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import SendMessage from "../../components/SendMessage";
 
-/**
- * Unit tests for SendMessage component
- * 
- * Tests focus on:
- * - Input field and button rendering
- * - Input validation (empty, whitespace)
- * - Callback invocation with correct data
- * - Input clearing after send
- * - Loading state management
- * - Error handling
- */
+//Unit tests for SendMessage component
+
 describe("SendMessage", () => {
   describe("rendering", () => {
     it("renders text input field", () => {

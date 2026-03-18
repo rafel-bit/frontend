@@ -7,17 +7,8 @@ import Login from "../../components/Login";
 import { AuthContext } from "../../context/AuthContext";
 import { factories } from "../testUtils";
 
-/**
- * Unit tests for Login component
- * 
- * Tests focus on:
- * - Field rendering (email, password, button)
- * - Navigation link to signup
- * - Form submission with correct arguments
- * - Error message display
- * - Loading state during submission
- * - Initial state (no error visible)
- */
+//Unit tests for Login component
+
 describe("Login", () => {
   const createAuthContext = (overrides = {}) => ({
     login: jest.fn(),

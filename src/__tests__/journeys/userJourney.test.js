@@ -1,9 +1,4 @@
-/**
- * User Journey System Tests
- *
- * These tests simulate complete, realistic user flows through the application.
- * Each "Journey" describes a sequence of actions a real user would take.
- *
+/*
  * Journeys covered:
  *   1. New user registers an account
  *   2. Returning user logs in
@@ -23,10 +18,6 @@ import Signup from "../../components/Signup";
 import EditProfile from "../../components/EditProfile";
 import SearchContacts from "../../components/SearchContacts";
 import ChatRoom from "../../components/ChatRoom";
-
-// ---------------------------------------------------------------------------
-// Module mocks (hoisted by Jest before any imports run)
-// ---------------------------------------------------------------------------
 
 jest.mock("../../services/socketService", () => ({
   initSocket: jest.fn(),
@@ -54,11 +45,8 @@ jest.mock("../../services/apiClient", () => ({
 
 import apiClient from "../../services/apiClient";
 
-// ---------------------------------------------------------------------------
 // Shared helpers
-// ---------------------------------------------------------------------------
 
-/** Wraps a component with AuthContext + MemoryRouter (needed for Link / useNavigate). */
 const renderWithProviders = (ui, authOverrides = {}) => {
   const authValue = {
     user: null,
@@ -83,7 +71,7 @@ const renderWithProviders = (ui, authOverrides = {}) => {
   };
 };
 
-/** A realistic logged-in user matching the backend model. */
+//A realistic logged-in user matching the backend model.
 const MOCK_USER = {
   id: "user-abc123",
   email: "john@example.com",
@@ -93,7 +81,7 @@ const MOCK_USER = {
   color: "#667eea",
 };
 
-/** A realistic contact returned by the contacts endpoint. */
+//A realistic contact returned by the contacts endpoint.
 const MOCK_CONTACT = {
   id: "contact-xyz456",
   firstName: "Jane",
@@ -109,9 +97,8 @@ beforeEach(() => {
   apiClient.post.mockResolvedValue({ data: { messages: [] } });
 });
 
-// ===========================================================================
-// Journey 1 – New User Registration
-// ===========================================================================
+
+// New User Registration
 
 describe("Journey 1: New user registers an account", () => {
   it("renders all signup fields and submits correct data to the API", async () => {
@@ -176,9 +163,7 @@ describe("Journey 1: New user registers an account", () => {
   });
 });
 
-// ===========================================================================
 // Journey 2 – Returning User Login
-// ===========================================================================
 
 describe("Journey 2: Returning user logs in", () => {
   it("submits email and password to the login function", async () => {
@@ -230,9 +215,7 @@ describe("Journey 2: Returning user logs in", () => {
   });
 });
 
-// ===========================================================================
 // Journey 3 – User Updates Their Profile
-// ===========================================================================
 
 describe("Journey 3: User updates their first and last name", () => {
   it("pre-fills the edit fields with the current name", () => {
@@ -324,9 +307,7 @@ describe("Journey 3: User updates their first and last name", () => {
   });
 });
 
-// ===========================================================================
 // Journey 4 – User Searches for and Adds a Contact
-// ===========================================================================
 
 describe("Journey 4: User searches for and selects a contact", () => {
   it("calls the search API with the typed search term", async () => {
@@ -390,9 +371,7 @@ describe("Journey 4: User searches for and selects a contact", () => {
   });
 });
 
-// ===========================================================================
 // Journey 5 – User Sends a Message
-// ===========================================================================
 
 describe("Journey 5: User sends a message in a chat", () => {
   const renderChatRoom = (authOverrides = {}) => {
@@ -462,9 +441,7 @@ describe("Journey 5: User sends a message in a chat", () => {
   });
 });
 
-// ===========================================================================
 // Journey 6 – User Logs Out
-// ===========================================================================
 
 describe("Journey 6: User logs out", () => {
   it("calls the logout function when the logout button is clicked", async () => {

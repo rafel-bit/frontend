@@ -4,17 +4,8 @@ import "@testing-library/jest-dom";
 import ContactsList from "../../components/ContactsList";
 import { factories } from "../testUtils";
 
-/**
- * Unit tests for ContactsList component
- * 
- * Tests focus on:
- * - Rendering empty state
- * - Contact list rendering and display
- * - Avatar initials generation
- * - Selection and deletion callbacks
- * - Active state styling
- * - Field fallback handling
- */
+
+//Unit tests for ContactsList component
 describe("ContactsList", () => {
   const noop = jest.fn();
 

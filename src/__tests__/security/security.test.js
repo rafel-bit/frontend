@@ -1,23 +1,5 @@
-/**
- * Security System Tests
- *
- * These tests verify that the frontend protects against or does not amplify
- * common web application attacks:
- *
- *   1. Brute Force – repeated login attempts are handled gracefully; the UI
- *      never allows parallel in-flight requests.
- *
- *   2. Injection Attacks (NoSQL / SQL) – user-supplied input is forwarded to
- *      the API as plain strings, never executed or mutated by the frontend.
- *
- *   3. Cross-Site Scripting (XSS) – content from the server (messages, names)
- *      is rendered as text, never as raw HTML.
- *
- * NOTE: jsdom does not execute injected <script> tags the way a real browser
- * does, so these tests focus on what the frontend layer is responsible for:
- * ensuring React renders user content as escaped text, and that the API is
- * called with the raw string value — not a modified or evaluated version.
- */
+
+//Security System Tests
 
 import React from "react";
 import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
@@ -60,10 +42,6 @@ jest.mock("../../services/apiClient", () => ({
 
 import apiClient from "../../services/apiClient";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 const renderWithProviders = (ui, authOverrides = {}) => {
   const authValue = {
     user: null,
@@ -102,15 +80,11 @@ beforeEach(() => {
   apiClient.post.mockResolvedValue({ data: { messages: [] } });
 });
 
-// ===========================================================================
 // 1. BRUTE FORCE PROTECTION
-// ===========================================================================
 
 describe("Brute Force Protection", () => {
-  /**
-   * The frontend must not submit simultaneous requests.
-   * While a login is in-flight, the submit button must be disabled.
-   */
+  //The frontend must not submit simultaneous requests.
+  //While actively logging in, the submit button must be disabled.
   it("disables the login button while a request is in-flight, preventing parallel submissions", async () => {
     let resolveFirst;
     const login = jest.fn(() => new Promise((r) => { resolveFirst = r; }));
@@ -207,15 +181,11 @@ describe("Brute Force Protection", () => {
   });
 });
 
-// ===========================================================================
 // 2. INJECTION ATTACK PREVENTION
-// ===========================================================================
 
 describe("Injection Attack Prevention", () => {
-  /**
-   * The frontend must pass user input to the API as plain strings.
-   * It must never evaluate, parse as JSON, or mutate the input.
-   */
+//The frontend must pass user input to the API as plain strings.
+//It must never evaluate, parse as JSON, or mutate the input.
 
   it("passes a NoSQL injection payload in email to the API as a plain string", async () => {
     const login = jest.fn().mockResolvedValue({});
@@ -317,16 +287,9 @@ describe("Injection Attack Prevention", () => {
   });
 });
 
-// ===========================================================================
 // 3. CROSS-SITE SCRIPTING (XSS) PREVENTION
-// ===========================================================================
 
 describe("XSS Prevention", () => {
-  /**
-   * React escapes all string content rendered with {}. These tests confirm
-   * that user-supplied content containing HTML or script tags is rendered as
-   * visible text — not injected into the DOM as live HTML.
-   */
 
   const renderMessages = (messages, currentUserId = "user-1") =>
     render(<MessageList messages={messages} currentUserId={currentUserId} />);

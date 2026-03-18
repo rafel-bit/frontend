@@ -29,14 +29,12 @@ const MessageList = ({ messages, currentUserId }) => {
       ) : (
         messages.map((message) => {
           const messageId = message._id || message.id;
-          // Support sender as object, plain string ID, or flat senderId field
           const senderId =
             (typeof message.sender === "string" ? message.sender : null) ||
             message.sender?.id ||
             message.sender?._id ||
             message.senderId ||
             message.userId;
-          // Defensive: ensure senderId and userId are both strings for comparison
           const normalizedSenderId = String(senderId);
           const normalizedUserId = String(userId);
           const isSent = normalizedSenderId === normalizedUserId;

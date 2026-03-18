@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
         const userData = response.data.user || response.data;
         setUser(userData);
       } catch (err) {
-        console.log("Not authenticated");
         localStorage.removeItem("authToken");
       } finally {
         setLoading(false);
@@ -113,13 +112,11 @@ export const AuthProvider = ({ children }) => {
         lastName,
       });
 
-      // Merge returned fields with the known-saved names so the UI always
-      // reflects the update even if the API returns a minimal response object.
       const returned = response.data.user || response.data;
       setUser((prev) => ({ ...prev, ...returned, firstName, lastName }));
       return response.data;
     } catch (err) {
-      // Handle both axios-style errors and plain rejection objects
+      // Handle both axios errors and objects
       let errorMsg = null;
       if (err && typeof err === 'object' && err.response) {
         errorMsg = err.response.data?.message || err.response.data?.error || err.message;

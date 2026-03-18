@@ -1,19 +1,4 @@
-/**
- * ChatRoom.js — Unit / Integration Tests
- *
- * Coverage targets (uncovered lines):
- *   Line 36   – setupSocket: waitForSocket rejects
- *   Lines 55–58  – handleConnect fires, rejoins room, calls fetchContacts
- *   Lines 72–90  – handleMessage: message from/to selected contact, updates messages + fetchContacts
- *   Lines 117–120 – fetchContacts error path (apiClient.get rejects)
- *   Lines 134–135 – fetchMessagesForContact: senderId read from msg.userId fallback
- *   Lines 154–163 – polling interval fires and updates messages when length differs
- *   Line 197  – handleSendMessage: getSocket returns null
- *   Lines 202–221 – handleDeleteContact: window.confirm, delete call, clears selectedContact
- *   Lines 227–236 – handleContactAdded: closes search modal, selects first contact
- *   Line 245  – handleLogout error path (logout() rejects)
- *   Lines 254–309 – JSX: search modal, edit-profile modal, no-chat-selected state
- */
+//ChatRoom unit tests
 
 import React from "react";
 import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
@@ -22,9 +7,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import ChatRoom from "../../components/ChatRoom";
 
-// ---------------------------------------------------------------------------
-// Module-level mocks
-// ---------------------------------------------------------------------------
+// Module mocks
 
 jest.mock("../../services/socketService", () => ({
   initSocket: jest.fn(),
@@ -53,9 +36,7 @@ jest.mock("../../services/apiClient", () => ({
 import apiClient from "../../services/apiClient";
 import * as socketService from "../../services/socketService";
 
-// ---------------------------------------------------------------------------
 // Shared constants
-// ---------------------------------------------------------------------------
 
 const MOCK_USER = {
   id: "user-abc123",
@@ -72,14 +53,8 @@ const MOCK_CONTACT = {
   email: "jane@example.com",
 };
 
-// ---------------------------------------------------------------------------
 // Helpers
-// ---------------------------------------------------------------------------
 
-/**
- * Wraps ChatRoom with MemoryRouter + AuthContext.Provider.
- * authOverrides are merged on top of sensible defaults.
- */
 const renderWithProviders = (ui, authOverrides = {}) => {
   const authValue = {
     user: MOCK_USER,
@@ -105,14 +80,10 @@ const renderWithProviders = (ui, authOverrides = {}) => {
 const renderChatRoom = (authOverrides = {}) =>
   renderWithProviders(<ChatRoom />, authOverrides);
 
-// ---------------------------------------------------------------------------
-// Per-test setup / teardown
-// ---------------------------------------------------------------------------
 
 beforeEach(() => {
   jest.clearAllMocks();
 
-  // Healthy defaults — individual tests override as needed
   apiClient.get.mockResolvedValue({ data: { contacts: [] } });
   apiClient.post.mockResolvedValue({ data: { messages: [] } });
   apiClient.delete.mockResolvedValue({});
@@ -133,12 +104,10 @@ beforeEach(() => {
   socketService.onMessage.mockReturnValue(jest.fn()); // unsubscribe fn
 });
 
-// ---------------------------------------------------------------------------
-// 1. setupSocket error path — Line 36
-// ---------------------------------------------------------------------------
+// 1. setupSocket error path
 
-describe("setupSocket error path (line 36)", () => {
-  it("handles waitForSocket rejection gracefully without crashing the component", async () => {
+describe("setupSocket error path", () => {
+  it("handles waitForSocket rejection without crashing the component", async () => {
     socketService.waitForSocket.mockRejectedValue(new Error("socket timeout"));
 
     // Component should still mount without throwing
@@ -151,11 +120,10 @@ describe("setupSocket error path (line 36)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 2. socket reconnect handler — Lines 55–58
-// ---------------------------------------------------------------------------
+// 2. socket reconnect handler
+// 
 
-describe("socket reconnect handler (lines 55–58)", () => {
+describe("socket reconnect handler", () => {
   it("emits 'join' and refreshes contacts when the socket fires a connect event", async () => {
     apiClient.get.mockResolvedValue({ data: { contacts: [MOCK_CONTACT] } });
 
@@ -195,11 +163,9 @@ describe("socket reconnect handler (lines 55–58)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 3. handleMessage — Lines 72–90
-// ---------------------------------------------------------------------------
+// 3. handleMessage
 
-describe("handleMessage — real-time message receipt (lines 72–90)", () => {
+describe("handleMessage — real-time message receipt", () => {
   const setupWithContact = async () => {
     apiClient.get.mockResolvedValue({ data: { contacts: [MOCK_CONTACT] } });
     apiClient.post.mockResolvedValue({ data: { messages: [] } });
@@ -303,11 +269,9 @@ describe("handleMessage — real-time message receipt (lines 72–90)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 4. fetchContacts error path — Lines 117–120
-// ---------------------------------------------------------------------------
+// 4. fetchContacts error path
 
-describe("fetchContacts error path (lines 117–120)", () => {
+describe("fetchContacts error path", () => {
   it("shows 'Failed to load contacts' when the contacts API rejects", async () => {
     apiClient.get.mockRejectedValue(new Error("Network Error"));
 
@@ -319,11 +283,9 @@ describe("fetchContacts error path (lines 117–120)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 5. fetchMessagesForContact — msg.userId fallback — Lines 134–135
-// ---------------------------------------------------------------------------
+// 5. fetchMessagesForContact
 
-describe("fetchMessagesForContact — msg.userId senderId fallback (lines 134–135)", () => {
+describe("fetchMessagesForContact — msg.userId senderId fallback", () => {
   it("normalises senderId from msg.userId when neither sender nor senderId is present", async () => {
     apiClient.get.mockResolvedValue({ data: { contacts: [MOCK_CONTACT] } });
     // Return a message that only has userId (no sender object, no senderId)
@@ -333,7 +295,7 @@ describe("fetchMessagesForContact — msg.userId senderId fallback (lines 134–
           {
             _id: "msg-userId-001",
             content: "Message using userId",
-            userId: MOCK_USER.id, // the fallback field
+            userId: MOCK_USER.id,
             timestamp: new Date().toISOString(),
           },
         ],
@@ -359,11 +321,9 @@ describe("fetchMessagesForContact — msg.userId senderId fallback (lines 134–
   });
 });
 
-// ---------------------------------------------------------------------------
-// 6. Polling interval — Lines 154–163
-// ---------------------------------------------------------------------------
+// 6. Polling
 
-describe("polling interval (lines 154–163)", () => {
+describe("polling interval", () => {
   beforeEach(() => jest.useFakeTimers());
   afterEach(() => jest.useRealTimers());
 
@@ -430,7 +390,7 @@ describe("polling interval (lines 154–163)", () => {
 
     const postCallsBefore = apiClient.post.mock.calls.length;
 
-    // Advance timers — poll runs but same length, should not cause extra renders
+    // Advance timers poll runs but same length, should not cause extra renders
     await act(async () => {
       jest.advanceTimersByTime(3000);
     });
@@ -442,11 +402,8 @@ describe("polling interval (lines 154–163)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 7. handleSendMessage — getSocket returns null — Line 197
-// ---------------------------------------------------------------------------
-
-describe("handleSendMessage — getSocket returns null (line 197)", () => {
+// 7. handleSendMessage
+describe("handleSendMessage — getSocket returns null", () => {
   it("does not crash and still calls fetchContacts when socket is unavailable", async () => {
     socketService.getSocket.mockReturnValue(null);
     apiClient.get.mockResolvedValue({ data: { contacts: [MOCK_CONTACT] } });
@@ -462,21 +419,21 @@ describe("handleSendMessage — getSocket returns null (line 197)", () => {
     await user.type(input, "Hello without socket");
     await user.click(screen.getByRole("button", { name: /^send$/i }));
 
-    // fetchContacts should still be called (socket branch skipped, but fetchContacts runs)
+    // fetchContacts should still be called
     await waitFor(() =>
       expect(apiClient.get).toHaveBeenCalled()
     );
 
-    // Component did not crash — sidebar heading still present
+    // Component did not crash
     expect(screen.getByRole("heading", { name: /chats/i })).toBeInTheDocument();
   });
 });
 
-// ---------------------------------------------------------------------------
-// 8. handleDeleteContact — Lines 202–221
-// ---------------------------------------------------------------------------
 
-describe("handleDeleteContact (lines 202–221)", () => {
+// 8. handleDeleteContact
+
+
+describe("handleDeleteContact", () => {
   it("does nothing when the user cancels the confirmation dialog", async () => {
     jest.spyOn(window, "confirm").mockReturnValue(false);
     apiClient.get.mockResolvedValue({ data: { contacts: [MOCK_CONTACT] } });
@@ -485,7 +442,7 @@ describe("handleDeleteContact (lines 202–221)", () => {
 
     await waitFor(() => screen.getByText("Jane Smith"));
 
-    // Click the delete button (✕) for Jane
+    // Click the delete button for Jane
     const deleteBtn = screen.getByTitle(/delete conversation/i);
     fireEvent.click(deleteBtn);
 
@@ -562,9 +519,9 @@ describe("handleDeleteContact (lines 202–221)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 9. handleContactAdded — Lines 227–236
-// ---------------------------------------------------------------------------
+
+// 9. handleContactAdded
+
 
 describe("handleContactAdded (lines 227–236)", () => {
   it("closes the search modal and selects the first returned contact", async () => {
@@ -619,7 +576,7 @@ describe("handleContactAdded (lines 227–236)", () => {
       expect(screen.getByRole("heading", { name: /chats/i })).toBeInTheDocument()
     );
 
-    // Open modal then immediately close via the ✕ button
+    // Open modal then immediately close via the button
     await user.click(screen.getByRole("button", { name: /\+/i }));
     expect(screen.getByText(/add new contacts/i)).toBeInTheDocument();
 
@@ -631,9 +588,9 @@ describe("handleContactAdded (lines 227–236)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 10. handleLogout error path — Line 245
-// ---------------------------------------------------------------------------
+
+// 10. handleLogout error path
+
 
 describe("handleLogout error path (line 245)", () => {
   it("does not crash when logout() rejects", async () => {
@@ -659,12 +616,11 @@ describe("handleLogout error path (line 245)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 11. JSX — no-chat-selected state, search modal, edit-profile modal
-//     Lines 254–309
-// ---------------------------------------------------------------------------
 
-describe("JSX rendering (lines 254–309)", () => {
+// 11.no-chat-selected state, search modal, edit-profile modal
+
+
+describe("JSX rendering", () => {
   it("shows the 'Select a contact to start chatting' message when no contact is selected", async () => {
     apiClient.get.mockResolvedValue({ data: { contacts: [] } });
 
@@ -705,7 +661,7 @@ describe("JSX rendering (lines 254–309)", () => {
     await user.click(screen.getByRole("button", { name: /\+/i }));
     expect(screen.getByText(/add new contacts/i)).toBeInTheDocument();
 
-    // The ✕ close button inside SearchContacts calls onClose → setShowSearchModal(false)
+    // The close button inside SearchContacts calls onClose → setShowSearchModal(false)
     await user.click(screen.getByRole("button", { name: /✕/i }));
 
     await waitFor(() =>
@@ -739,8 +695,8 @@ describe("JSX rendering (lines 254–309)", () => {
 
     expect(screen.getByRole("heading", { name: /edit profile/i })).toBeInTheDocument();
 
-    // Click the ✕ button inside the EditProfile modal
-    // There may be multiple ✕ buttons; the one inside the modal header is what we want.
+    // Click the button inside the EditProfile modal
+    // There may be multiple buttons; the one inside the modal header is what we want.
     const closeButtons = screen.getAllByRole("button", { name: /✕/i });
     await user.click(closeButtons[closeButtons.length - 1]);
 

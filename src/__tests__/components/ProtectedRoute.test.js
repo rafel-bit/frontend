@@ -5,14 +5,8 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { AuthContext } from "../../context/AuthContext";
 
-/**
- * Unit tests for ProtectedRoute component
- *
- * Tests focus on:
- * - Showing a loading indicator while auth state is being determined
- * - Redirecting unauthenticated users to /login
- * - Rendering children for authenticated users
- */
+//Unit tests for ProtectedRoute component
+
 describe("ProtectedRoute", () => {
   const createAuthContext = (overrides = {}) => ({
     isAuthenticated: false,

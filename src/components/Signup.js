@@ -26,9 +26,7 @@ const Signup = () => {
       setPassword("");
       navigate("/chat");
     } catch (err) {
-      console.error("Signup error caught:", err);
       const errorMsg = err.response?.data?.message || err.message || "Signup failed";
-      console.error("Error message:", errorMsg);
       setLocalError(errorMsg);
     } finally {
       setLoading(false);

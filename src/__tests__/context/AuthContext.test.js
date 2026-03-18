@@ -2,35 +2,20 @@ import React from "react";
 import { render, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-// Mock must be at top level, before AuthContext import
+// Mock
 jest.mock("../../services/apiClient");
 
 import { AuthProvider, AuthContext } from "../../context/AuthContext";
 import apiClient from "../../services/apiClient";
 import { factories } from "../testUtils";
 
-/**
- * Unit tests for AuthContext
- * 
- * Tests focus on:
- * - Initial state (loading, no user)
- * - Token restoration on mount
- * - Token removal on auth failure
- * - Login success/failure
- * - Logout with/without API errors
- * - Signup success/failure
- * - Error message handling
- * - Different response formats
- */
+//Unit tests for AuthContext
 describe("AuthContext", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
   });
 
-  /**
-   * Helper: renders a consumer component that captures the context value
-   */
   const renderAuthConsumer = () => {
     let contextValue;
     const Consumer = () => {
@@ -283,11 +268,7 @@ describe("AuthContext", () => {
   });
 
   describe("updateProfile()", () => {
-    /**
-     * Each test needs an already-authenticated user so it can call updateProfile.
-     * Strategy: set a token in localStorage and mock apiClient.get to return a user,
-     * then wait for loading to finish (checkAuth resolves).
-     */
+    //Each test needs an already authenticated user so it can call updateProfile.
     const existingUser = {
       id: "u10",
       email: "profile@test.com",
@@ -391,7 +372,6 @@ describe("AuthContext", () => {
 
       expect(getContext().error).toEqual("Bad creds");
 
-      // Now retry with success
       apiClient.post.mockResolvedValue({ data: { user: fakeUser } });
 
       await act(() => getContext().login("user@test.com", "password"));

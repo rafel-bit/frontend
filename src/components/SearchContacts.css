@@ -79,12 +79,12 @@
 }
 
 .search-input:focus {
-  border-color: #667eea;
+  border-color: #2563eb;
 }
 
 .btn-search {
   padding: 10px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 6px;
@@ -130,12 +130,12 @@
 
 .search-result-item:hover {
   background-color: #f9f9f9;
-  border-color: #667eea;
+  border-color: #2563eb;
 }
 
 .search-result-item.selected {
   background-color: #f0f0ff;
-  border-color: #667eea;
+  border-color: #2563eb;
 }
 
 .result-checkbox {
@@ -168,7 +168,7 @@
 .selected-count {
   padding: 10px 20px;
   background-color: #f0f0ff;
-  color: #667eea;
+  color: #2563eb;
   text-align: center;
   font-size: 12px;
   font-weight: 600;
@@ -184,7 +184,7 @@
 .btn-add-contacts {
   flex: 1;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 6px;

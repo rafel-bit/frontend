@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   padding: 20px;
 }
 
@@ -32,7 +32,7 @@
   font-size: 32px;
   margin-bottom: 10px;
   text-align: center;
-  color: #667eea;
+  color: #2563eb;
   font-weight: 700;
 }
 
@@ -65,14 +65,14 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
 
 .btn-primary {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 4px;
@@ -100,14 +100,14 @@
 }
 
 .auth-footer a {
-  color: #667eea;
+  color: #2563eb;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .auth-footer a:hover {
-  color: #764ba2;
+  color: #2563eb;
 }
 
 .error-message {

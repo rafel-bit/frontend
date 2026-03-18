@@ -20,7 +20,7 @@
 
 .edit-profile-header {
   padding: 18px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -77,7 +77,7 @@
 }
 
 .form-group input:focus {
-  border-color: #667eea;
+  border-color: #2563eb;
 }
 
 .form-group input:disabled {
@@ -132,7 +132,7 @@
 
 .btn-save {
   padding: 9px 18px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 6px;

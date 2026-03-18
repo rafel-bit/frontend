@@ -8,13 +8,10 @@ let connectionPromise = null;
 
 export const initSocket = () => {
   if (socket) {
-    console.log("Socket already initialized, returning existing socket. Connected:", socket.connected);
     return Promise.resolve(socket);
   }
 
-  console.log("Creating new Socket.IO connection...");
   connectionPromise = new Promise((resolve) => {
-    console.log("Initializing Socket.IO with SERVER_URL:", SERVER_URL);
     socket = io(SERVER_URL, {
       withCredentials: true,
       extraHeaders: {
@@ -27,26 +24,19 @@ export const initSocket = () => {
     });
 
     socket.on("connect", () => {
-      console.log("Socket CONNECTED:", socket.id);
       resolve(socket);
     });
 
     socket.on("disconnect", () => {
-      console.log("Socket DISCONNECTED");
+      console.log("Socket disconnected");
     });
 
     socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
+      console.error("Socket connection error:", error.message);
     });
 
-    // Centralized message listener that broadcasts to all registered listeners
     socket.on("receiveMessage", (data) => {
-      console.log("Socket.IO receiveMessage event fired with data:", data);
-      console.log("Number of listeners registered:", messageListeners.length);
-      messageListeners.forEach((listener, index) => {
-        console.log(`  → Calling listener ${index}`);
-        listener(data);
-      });
+      messageListeners.forEach((listener) => listener(data));
     });
   });
 
@@ -69,7 +59,6 @@ export const waitForSocket = async () => {
   return connectionPromise;
 };
 
-// Register a listener to be called when a message is received
 export const onMessage = (callback) => {
   messageListeners.push(callback);
   return () => {

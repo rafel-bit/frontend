@@ -26,14 +26,11 @@ const ChatRoom = () => {
 
     const setupSocket = async () => {
       try {
-        console.log("📡 Waiting for socket to be ready...");
         const socket = await waitForSocket();
         const userId = user.id || user._id;
-        console.log("📡 Socket ready, emitting join with userId:", userId);
         socket.emit("join", { userId });
-        console.log("✅ Joined socket room:", userId);
       } catch (err) {
-        console.error("❌ Failed to setup socket:", err);
+        console.error("Failed to setup socket:", err);
       }
     };
 
@@ -52,7 +49,6 @@ const ChatRoom = () => {
     if (!socket) return;
 
     const handleConnect = () => {
-      console.log("Socket connected/reconnected, rejoining room");
       const userId = user.id || user._id;
       socket.emit("join", { userId });
       fetchContacts();
@@ -105,18 +101,12 @@ const ChatRoom = () => {
     try {
       setLoading(true);
       setError("");
-      console.log("Fetching contacts...");
       const response = await apiClient.get("/api/contacts/get-contacts-for-list");
-      console.log("Contacts response:", response.data);
-      
       // Handle both possible response structures
       const contactsData = response.data.contacts || response.data.data || response.data || [];
       setContacts(Array.isArray(contactsData) ? contactsData : []);
-      console.log("Contacts loaded:", contactsData);
     } catch (err) {
-      console.error("Failed to load contacts - Status:", err.response?.status);
-      console.error("Failed to load contacts - Response:", err.response?.data);
-      console.error("Failed to load contacts - Message:", err.message);
+      console.error("Failed to load contacts:", err.message);
       setError("Failed to load contacts");
     } finally {
       setLoading(false);
@@ -147,7 +137,6 @@ const ChatRoom = () => {
     }
   }, [selectedContact, user]);
 
-  // Polling fallback: fetch messages every 3s in case socket events are missed
   useEffect(() => {
     if (!selectedContact) return;
     const intervalId = setInterval(async () => {
@@ -163,7 +152,6 @@ const ChatRoom = () => {
           return prev;
         });
       } catch (err) {
-        // Silently fail — polling is just a fallback
       }
     }, 3000);
     return () => clearInterval(intervalId);
@@ -185,11 +173,7 @@ const ChatRoom = () => {
           content: messageContent,
           messageType: "text",
         });
-        console.log("Message sent via socket");
       }
-
-      // Don't add message locally - let receiveMessage event handle it for all parties
-      // This prevents duplicate messages (Bug 1 fix)
       
       // After sending, force refresh contacts for both parties
       fetchContacts();
@@ -223,7 +207,7 @@ const ChatRoom = () => {
   };
 
   const handleContactAdded = (selectedContacts) => {
-    // Refresh contacts list after adding new contacts
+    // Refresh contacts list after adding new contacts so users can see new contact
     setShowSearchModal(false);
     
     if (selectedContacts && selectedContacts.length > 0) {

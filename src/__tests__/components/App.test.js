@@ -1,23 +1,10 @@
-/**
- * App.js — Unit / Integration Tests
- *
- * App uses BrowserRouter internally, so tests must NOT wrap it in another
- * router. Window location is controlled via window.history.pushState().
- *
- * Coverage targets:
- *   Line 14-15  – loading=true shows <div className="loading-screen">Loading...</div>
- *   Line 22     – /login route renders Login when unauthenticated
- *   Line 26     – /signup route renders Signup when unauthenticated
- *   Line 36     – / redirects to /chat (ProtectedRoute → /login for unauthed users)
- */
+//Unit tests
 
 import React from "react";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-// ---------------------------------------------------------------------------
-// Module-level mocks — must be declared before any imports that use them
-// ---------------------------------------------------------------------------
+//Jest mock setup
 
 jest.mock("../../services/apiClient", () => ({
   __esModule: true,
@@ -42,28 +29,16 @@ jest.mock("../../services/socketService", () => ({
   disconnectSocket: jest.fn(),
 }));
 
-// ---------------------------------------------------------------------------
-// Import subjects AFTER mocks are set up
-// ---------------------------------------------------------------------------
-
 import App from "../../App";
 import apiClient from "../../services/apiClient";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
-/**
- * Navigate to a path using the History API so BrowserRouter picks it up.
- * Must be called before render() so the router reads the correct location.
- */
+//Must be called before render() so the router reads the correct location.
 const setPath = (path) => {
   window.history.pushState({}, "", path);
 };
 
-// ---------------------------------------------------------------------------
 // Tests
-// ---------------------------------------------------------------------------
 
 describe("App", () => {
   beforeEach(() => {
@@ -77,9 +52,7 @@ describe("App", () => {
     cleanup();
   });
 
-  // -------------------------------------------------------------------------
   // Loading state
-  // -------------------------------------------------------------------------
 
   describe("loading screen", () => {
     it("renders loading screen while auth check is in progress", () => {
@@ -103,9 +76,7 @@ describe("App", () => {
     });
   });
 
-  // -------------------------------------------------------------------------
   // Unauthenticated routes
-  // -------------------------------------------------------------------------
 
   describe("unauthenticated routing", () => {
     it("shows Login page at /login when not authenticated", async () => {
@@ -120,7 +91,7 @@ describe("App", () => {
         expect(screen.queryByText(/^loading\.{3}$/i)).not.toBeInTheDocument()
       );
 
-      // Login page renders an email input (or a heading)
+      // Login page renders an email input
       expect(
         screen.getByRole("textbox", { name: /email/i })
       ).toBeInTheDocument();
@@ -169,16 +140,13 @@ describe("App", () => {
         expect(screen.queryByText(/^loading\.{3}$/i)).not.toBeInTheDocument()
       );
 
-      // Wildcard route → /chat → ProtectedRoute → /login
       expect(
         screen.getByRole("textbox", { name: /email/i })
       ).toBeInTheDocument();
     });
   });
 
-  // -------------------------------------------------------------------------
   // Authenticated routing
-  // -------------------------------------------------------------------------
 
   describe("authenticated routing", () => {
     it("redirects /login to /chat when already authenticated", async () => {

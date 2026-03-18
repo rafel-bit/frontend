@@ -6,16 +6,8 @@ import { MemoryRouter } from "react-router-dom";
 import Signup from "../../components/Signup";
 import { AuthContext } from "../../context/AuthContext";
 
-/**
- * Unit tests for Signup component
- * 
- * Tests focus on:
- * - Field rendering (first name, last name, email, password, button)
- * - Navigation link to login
- * - Form submission with correct argument order
- * - Error message display
- * - Loading state during submission
- */
+//Unit tests for Signup component
+
 describe("Signup", () => {
   const createAuthContext = (overrides = {}) => ({
     signup: jest.fn(),

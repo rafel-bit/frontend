@@ -20,19 +20,8 @@ import SearchContacts from "../../components/SearchContacts";
 import apiClient from "../../services/apiClient";
 import { factories } from "../testUtils";
 
-/**
- * Unit tests for SearchContacts component
- * 
- * Tests focus on:
- * - Search input and button rendering
- * - API call validation (empty query, valid query)
- * - Result rendering and display
- * - Empty state message
- * - Contact selection/deselection
- * - Selection count display
- * - Callback invocation with selected contacts
- * - Error message display
- */
+//Unit tests for SearchContacts component
+
 describe("SearchContacts", () => {
   const mockOnContactAdded = jest.fn();
   const results = [

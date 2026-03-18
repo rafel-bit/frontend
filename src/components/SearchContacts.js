@@ -32,11 +32,9 @@ const SearchContacts = ({ onContactAdded, onClose }) => {
     setError("");
 
     try {
-      console.log("Searching for:", searchQuery);
       const response = await apiClient.post("/api/contacts/search", {
         searchTerm: searchQuery.trim(),
       });
-      console.log("Search response:", response.data);
       
       // Backend returns 'contacts' array
       const results = response.data.contacts || [];
@@ -51,9 +49,7 @@ const SearchContacts = ({ onContactAdded, onClose }) => {
       
       setSearchResults(filtered);
     } catch (err) {
-      console.error("Search error - Status:", err.response?.status);
-      console.error("Search error - Data:", err.response?.data);
-      console.error("Search error - Message:", err.message);
+      console.error("Search failed:", err.message);
       setError(err.response?.data?.message || err.message || "Search failed");
       setSearchResults([]);
     } finally {
@@ -79,12 +75,8 @@ const SearchContacts = ({ onContactAdded, onClose }) => {
       return;
     }
 
-    console.log("Adding contacts to chat list");
-    
-    // Trigger the callback with selected contacts
     onContactAdded(selectedResults);
     
-    // Close the modal
     handleClose();
   };
 

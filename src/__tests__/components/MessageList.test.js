@@ -4,17 +4,8 @@ import "@testing-library/jest-dom";
 import MessageList from "../../components/MessageList";
 import { factories } from "../testUtils";
 
-/**
- * Unit tests for MessageList component
- * 
- * Tests focus on:
- * - Rendering empty state
- * - Rendering messages with correct content
- * - CSS classification (sent vs received)
- * - Handling different senderId formats
- * - Timestamp formatting
- * - Message ordering
- */
+//Unit tests for MessageList component
+
 describe("MessageList", () => {
   describe("empty state", () => {
     it("displays empty-state message when no messages exist", () => {
