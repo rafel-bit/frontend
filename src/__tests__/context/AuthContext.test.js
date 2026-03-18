@@ -209,7 +209,7 @@ describe("AuthContext", () => {
 
       await act(() => getContext().signup("new@test.com", "pw", "New", "User"));
 
-      expect(getContext().user).toEqual(newUser);
+      expect(getContext().user).toEqual({ ...newUser, firstName: "New", lastName: "User" });
       expect(getContext().isAuthenticated).toBe(true);
     });
 

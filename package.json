@@ -15,7 +15,9 @@
   "scripts": {
     "start": "cross-env PORT=5173 react-scripts start",
     "build": "react-scripts build",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "journeys": "jest src/__tests__/journeys/userJourney.test.js --coverage",
+    "security": "jest src/__tests__/security/security.test.js --coverage"
   },
   "eslintConfig": {
     "extends": [
